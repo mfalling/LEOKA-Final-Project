@@ -5,8 +5,6 @@ library(dplyr)
 # Read Data ---------------------------------------------------------------
 
 df <- read.csv("data/LEOKA_1995_2019.csv", na.strings = "")
-# checkpoint <- df
-# df <- checkpoint
 
 # Get data structure
 str(df)
