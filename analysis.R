@@ -112,12 +112,20 @@ df$ACTIVITY_ID <- as.factor(df$ACTIVITY_ID)
 uniqueValues <- uniqueCheck(df)
 uniqueValues
 
+# Unique values look representative of real data.
+# Check the structure; the first 11 variables should now be factors.
 str(df)
 
-# Convert all characters to numeric.
+# Convert the rest of the variables from character to numeric.
 df <- df %>%
   mutate_if(is.character, as.numeric)
 
+# Confirm the structure output.
 str(df)
 
 # Data now consists of 11 factor variables and 12 quantitative numeric variables.
+
+
+# Exploratory -------------------------------------------------------------
+
+
