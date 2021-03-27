@@ -126,4 +126,19 @@ str(df)
 
 # Exploratory -------------------------------------------------------------
 
+# Group by region and get sums of numeric variables.
+LEOKA <- df %>%
+  group_by(REGION_NAME) %>%
+  summarise_if(is.numeric, sum)
+
+# Tally across the rows (all assaults)
+totals <- rowSums(LEOKA[2:12])
+
+# Get the percentage of cleared charges
+percentCleared <- round((LEOKA[13]/totals)*100, 2)
+colnames(percentCleared) <- "percentCleared"
+
+# Combine results and view.
+cbind(LEOKA[1], totals, LEOKA[13], percentCleared) %>%
+  arrange(desc(percentCleared))
 
