@@ -13,14 +13,14 @@ str(df)
 
 # Clean Data --------------------------------------------------------------
 
-# Create a vector of the categorical (factor) variables.
-# This will be used to filter the dataset during exploration.
-factorColumns <- colnames(df)[1:11]
+# Create a vector of the dimensions (qualitative variables)
+# This will be used to filter the dataset during exploration
+dimensions <- colnames(df)[1:11]
 
 # Get number of unique values
 uniqueCheck <- function(df){
   uniqueValues <- df %>%
-    select(factorColumns) %>%
+    select(dimensions) %>%
     summarise_all(n_distinct) %>%
     t() %>%
     as.data.frame() %>%
@@ -45,11 +45,9 @@ years <- unique(df$DATA_YEAR)[1:25]
 indices <- grepl(paste(years, collapse = "|"), df$DATA_YEAR)
 df <- df[indices, ]
 unique(df$DATA_YEAR)
-
-# Looks good. Conver to factor.
 df$DATA_YEAR <- as.factor(df$DATA_YEAR)
 
-# Update uniqueValues and move on.
+# Update uniqueValues
 uniqueValues <- uniqueCheck(df)
 uniqueValues
 
@@ -78,7 +76,13 @@ df$REGION_NAME <- as.factor(df$REGION_NAME)
 unique(df$AGENCY_TYPE_NAME)
 df$AGENCY_TYPE_NAME <- as.factor(df$AGENCY_TYPE_NAME)
 df$COUNTY_NAME <- as.factor(df$COUNTY_NAME)
-unique(df$POPULATION_GROUP_DESC)
+
+# Rename the Possessions population group.
+pop <- unique(df$POPULATION_GROUP_DESC)
+df <- df %>%
+  mutate(POPULATION_GROUP_DESC = 
+           case_when(POPULATION_GROUP_DESC == pop[20] ~ "Possessions",
+                     TRUE ~ POPULATION_GROUP_DESC))
 df$POPULATION_GROUP_DESC <- as.factor(df$POPULATION_GROUP_DESC)
 
 # Check COUNTY_NAME for numeric and NA values.
@@ -103,6 +107,7 @@ activities <- unique(df$ACTIVITY_NAME)[1:11]
 indices <- grepl(paste(activities, collapse = "|"), df$ACTIVITY_NAME)
 df <- df[indices, ]
 
+# Confirm activity names and IDs are updated appropriately.
 unique(df$ACTIVITY_NAME)
 unique(df$ACTIVITY_ID)
 df$ACTIVITY_NAME <- as.factor(df$ACTIVITY_NAME)
@@ -127,22 +132,48 @@ str(df)
 
 
 # Exploratory -------------------------------------------------------------
-##
+
+## COUNTS BY REGION
 # Group by region and get sums of numeric variables.
-LEOKA <- df %>%
+LEOKA.reg <- df %>%
   group_by(REGION_NAME) %>%
   summarise_if(is.numeric, sum)
 
 # Tally across the rows (all assaults)
-totals <- rowSums(LEOKA[2:12])
+totals.reg <- rowSums(LEOKA.reg[2:12])
 
 # Get the percentage of cleared charges
-percentCleared <- round((LEOKA[13]/totals)*100, 2)
+percentCleared <- round((LEOKA.reg[13]/totals.reg)*100, 2)
 colnames(percentCleared) <- "percentCleared"
 
 # Combine results and view.
-cbind(LEOKA[1], totals, LEOKA[13], percentCleared) %>%
+cbind(LEOKA.reg[1], totals.reg, LEOKA.reg[12], percentCleared) %>%
   arrange(desc(percentCleared))
+
+## COUNTS BY POPULATION
+options(scipen = 999)
+df %>%
+  group_by(POPULATION_GROUP_DESC) %>%
+  tally() %>%
+  ggplot(aes(x = reorder(POPULATION_GROUP_DESC, -n), y = n)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  labs(title = "Total Records Per Population Group",
+       x = "Population Group",
+       y = "Number of Records")
+
+# Get only counts for cities
+cities <- df %>%
+  filter(grepl("Cities", POPULATION_GROUP_DESC)) %>%
+  group_by(POPULATION_GROUP_DESC) %>%
+  tally() %>%
+  arrange(desc(n))
+
+# View counts
+cities
+
+# Dataset is still 2.2 mil when filtered to only cities.
+sum(cities$n)
 
 ##
 # Group by ACTIVITY_NAME, DATA_YEAR and get sums of numeric variables.
@@ -155,7 +186,7 @@ totals.act <- rowSums(LEOKA.act [3:13])
 
 # Change DATA_YEAR from factor to number
 LEOKA.act$DATA_YEAR <- year(as.Date(LEOKA.act$DATA_YEAR,
-                                      format="%Y"))
+                                    format = "%Y"))
 
 # Visualization ----------------------------------------------------------
 
