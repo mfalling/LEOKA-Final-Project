@@ -1,6 +1,8 @@
 # Library -----------------------------------------------------------------
 
 library(dplyr)
+library(ggplot2)
+library(lubridate)
 
 # Read Data ---------------------------------------------------------------
 
@@ -125,7 +127,7 @@ str(df)
 
 
 # Exploratory -------------------------------------------------------------
-
+##
 # Group by region and get sums of numeric variables.
 LEOKA <- df %>%
   group_by(REGION_NAME) %>%
@@ -142,3 +144,26 @@ colnames(percentCleared) <- "percentCleared"
 cbind(LEOKA[1], totals, LEOKA[13], percentCleared) %>%
   arrange(desc(percentCleared))
 
+##
+# Group by ACTIVITY_NAME, DATA_YEAR and get sums of numeric variables.
+LEOKA.act <- df %>%
+  group_by(ACTIVITY_NAME, DATA_YEAR) %>%
+  summarise_if(is.numeric, sum)
+
+# Tally across the rows (all assaults)
+totals.act <- rowSums(LEOKA.act [3:13])
+
+# Change DATA_YEAR from factor to number
+LEOKA.act$DATA_YEAR <- year(as.Date(LEOKA.act$DATA_YEAR,
+                                      format="%Y"))
+
+# Visualization ----------------------------------------------------------
+
+# Visualize distribution of change in activities over time
+ggplot(LEOKA.act, aes(x = DATA_YEAR, y = totals.act)) +
+  geom_bar(stat = "identity", fill = "dodgerblue4") +
+  geom_smooth(method = lm, show.legend = FALSE, aes(color = "orange3")) +
+  facet_wrap(LEOKA.act$ACTIVITY_NAME, ncol = 3, scales = "free") +
+  labs(title = "Number of Incidents Per Year by Activity", 
+       x = "Year", y = "Count") +
+  theme_minimal()
