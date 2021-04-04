@@ -29,6 +29,7 @@ uniqueCheck <- function(df){
   return(uniqueValues)
 }
 
+
 # View results
 uniqueValues <- uniqueCheck(df)
 uniqueValues
@@ -130,7 +131,6 @@ str(df)
 
 # Data now consists of 11 factor variables and 12 quantitative numeric variables.
 
-
 # Exploratory -------------------------------------------------------------
 
 ## COUNTS BY REGION
@@ -198,3 +198,53 @@ ggplot(LEOKA.act, aes(x = DATA_YEAR, y = totals.act)) +
   labs(title = "Number of Incidents Per Year by Activity", 
        x = "Year", y = "Count") +
   theme_minimal()
+
+
+
+# Visualization of Trending Activities: Scaled ----------------------------
+
+# Using Sean's graph above... Cutting the data to the three most
+# trending activities and visualizating them on the same Y scale.
+
+# Trending activities based on the visualization above
+trending <- activities[c(1, 4, 10)]
+
+# Filter the dataset to only trending activities in cities.
+cleaned <- df %>%
+  filter(grepl("Cities", POPULATION_GROUP_DESC)) %>%
+  filter(grepl(paste(trending, collapse = "|"), ACTIVITY_NAME)) 
+
+# Dataset filtered to 609229 observations
+nrow(cleaned)
+
+
+# Group by ACTIVITY_NAME, DATA_YEAR and get sums of numeric variables.
+LEOKA.act2 <- cleaned %>%
+  group_by(ACTIVITY_NAME, DATA_YEAR) %>%
+  summarise_if(is.numeric, sum)
+
+# Tally across the rows (all assaults)
+totals.act2 <- rowSums(LEOKA.act2[3:13])
+
+# Change DATA_YEAR from factor to number
+LEOKA.act2$DATA_YEAR <- as.numeric(LEOKA.act2$DATA_YEAR)
+
+# Visualize distribution of change in activities over time
+ggplot(LEOKA.act2, aes(x = DATA_YEAR, y = totals.act2)) +
+  geom_bar(stat = "identity", fill = "dodgerblue4") +
+  geom_smooth(method = lm, show.legend = FALSE, aes(color = "orange3")) +
+  facet_wrap(LEOKA.act2$ACTIVITY_NAME, ncol = 3, scales = "free") +
+  labs(title = "Number of Incidents Per Year by Activity", 
+       x = "Year", y = "Count") +
+  theme_minimal() +
+  ylim(0, max(totals.act2))
+
+# For comparison -- Same scale, full activity set.
+ggplot(LEOKA.act, aes(x = DATA_YEAR, y = totals.act)) +
+  geom_bar(stat = "identity", fill = "dodgerblue4") +
+  geom_smooth(method = lm, show.legend = FALSE, aes(color = "orange3")) +
+  facet_wrap(LEOKA.act$ACTIVITY_NAME, ncol = 3, scales = "free") +
+  labs(title = "Number of Incidents Per Year by Activity", 
+       x = "Year", y = "Count") +
+  theme_minimal() +
+  ylim(0, max(totals.act))
