@@ -1,0 +1,276 @@
+"","DATA_YEAR","ACTIVITY_NAME","activityTotals","yearlyTotals","ratio"
+"1","1995","All Other",4871,47508,0.102530100193652
+"2","1995","Ambush - No Warning",219,47508,0.00460974993685274
+"3","1995","Attempting Other Arrests",9322,47508,0.196219584070051
+"4","1995","Burglaries in Progress or Pursuing Burglary Suspects",653,47508,0.0137450534646796
+"5","1995","Civil Disorder",590,47508,0.0124189610170919
+"6","1995","Handling Persons with Mental Illness",694,47508,0.0146080660099352
+"7","1995","Handling, Transporting, Custody of Prisoners",4890,47508,0.102930032836575
+"8","1995","Investigating Suspicious Persons or Circumstances",5423,47508,0.114149195924897
+"9","1995","Responding to Disturbance Calls",15688,47508,0.330218068535826
+"10","1995","Robberies in Progress or Pursuing Robbery Suspects",612,47508,0.0128820409194241
+"11","1995","Traffic Pursuits and Stops",4546,47508,0.0956891470910163
+"12","1996","All Other",4223,39413,0.107147387917692
+"13","1996","Ambush - No Warning",206,39413,0.00522670184964352
+"14","1996","Attempting Other Arrests",8546,39413,0.216832009742978
+"15","1996","Burglaries in Progress or Pursuing Burglary Suspects",692,39413,0.0175576586405501
+"16","1996","Civil Disorder",512,39413,0.012990637606881
+"17","1996","Handling Persons with Mental Illness",644,39413,0.016339786364905
+"18","1996","Handling, Transporting, Custody of Prisoners",4393,39413,0.111460685560602
+"19","1996","Investigating Suspicious Persons or Circumstances",4072,39413,0.103316164717225
+"20","1996","Responding to Disturbance Calls",12030,39413,0.305229239083551
+"21","1996","Robberies in Progress or Pursuing Robbery Suspects",630,39413,0.0159845736178418
+"22","1996","Traffic Pursuits and Stops",3465,39413,0.0879151548981301
+"23","1997","All Other",5037,43761,0.115102488517173
+"24","1997","Ambush - No Warning",172,43761,0.00393044034642718
+"25","1997","Attempting Other Arrests",8474,43761,0.193642741253628
+"26","1997","Burglaries in Progress or Pursuing Burglary Suspects",674,43761,0.0154018418226275
+"27","1997","Civil Disorder",590,43761,0.0134823244441398
+"28","1997","Handling Persons with Mental Illness",758,43761,0.0173213592011151
+"29","1997","Handling, Transporting, Custody of Prisoners",4550,43761,0.103973858001417
+"30","1997","Investigating Suspicious Persons or Circumstances",5039,43761,0.115148191311899
+"31","1997","Responding to Disturbance Calls",13588,43761,0.310504787367748
+"32","1997","Robberies in Progress or Pursuing Robbery Suspects",614,43761,0.0140307579808505
+"33","1997","Traffic Pursuits and Stops",4265,43761,0.0974612097529764
+"34","1998","All Other",5418,46663,0.116109122859653
+"35","1998","Ambush - No Warning",202,46663,0.00432891155733665
+"36","1998","Attempting Other Arrests",9394,46663,0.201315817671388
+"37","1998","Burglaries in Progress or Pursuing Burglary Suspects",617,46663,0.0132224674795877
+"38","1998","Civil Disorder",520,46663,0.0111437327218567
+"39","1998","Handling Persons with Mental Illness",759,46663,0.0162655637228639
+"40","1998","Handling, Transporting, Custody of Prisoners",4694,46663,0.100593618069991
+"41","1998","Investigating Suspicious Persons or Circumstances",5302,46663,0.11362321325247
+"42","1998","Responding to Disturbance Calls",14344,46663,0.307395581081371
+"43","1998","Robberies in Progress or Pursuing Robbery Suspects",570,46663,0.0122152454835737
+"44","1998","Traffic Pursuits and Stops",4843,46663,0.103786726099908
+"45","1999","All Other",4734,42659,0.110973065472702
+"46","1999","Ambush - No Warning",156,42659,0.00365690710049462
+"47","1999","Attempting Other Arrests",7925,42659,0.185775569047563
+"48","1999","Burglaries in Progress or Pursuing Burglary Suspects",628,42659,0.0147213952507091
+"49","1999","Civil Disorder",378,42659,0.00886096720504466
+"50","1999","Handling Persons with Mental Illness",615,42659,0.0144166529923346
+"51","1999","Handling, Transporting, Custody of Prisoners",4486,42659,0.105159520851403
+"52","1999","Investigating Suspicious Persons or Circumstances",5060,42659,0.118615063644249
+"53","1999","Responding to Disturbance Calls",13478,42659,0.315947396797862
+"54","1999","Robberies in Progress or Pursuing Robbery Suspects",365,42659,0.0085562249466701
+"55","1999","Traffic Pursuits and Stops",4834,42659,0.113317236690968
+"56","2000","All Other",4906,43940,0.111652253072371
+"57","2000","Ambush - No Warning",167,43940,0.0038006372325899
+"58","2000","Attempting Other Arrests",7695,43940,0.175125170687301
+"59","2000","Burglaries in Progress or Pursuing Burglary Suspects",639,43940,0.0145425580336823
+"60","2000","Civil Disorder",636,43940,0.0144742831133364
+"61","2000","Handling Persons with Mental Illness",607,43940,0.0138142922166591
+"62","2000","Handling, Transporting, Custody of Prisoners",4483,43940,0.102025489303596
+"63","2000","Investigating Suspicious Persons or Circumstances",5109,43940,0.116272189349112
+"64","2000","Responding to Disturbance Calls",14315,43940,0.325785161583978
+"65","2000","Robberies in Progress or Pursuing Robbery Suspects",436,43940,0.00992262175694128
+"66","2000","Traffic Pursuits and Stops",4947,43940,0.112585343650432
+"67","2001","All Other",5193,45542,0.114026612796979
+"68","2001","Ambush - No Warning",148,45542,0.00324974748583725
+"69","2001","Attempting Other Arrests",7561,45542,0.166022572570375
+"70","2001","Burglaries in Progress or Pursuing Burglary Suspects",690,45542,0.015150849765052
+"71","2001","Civil Disorder",483,45542,0.0106055948355364
+"72","2001","Handling Persons with Mental Illness",744,45542,0.016336568442317
+"73","2001","Handling, Transporting, Custody of Prisoners",4703,45542,0.103267313688463
+"74","2001","Investigating Suspicious Persons or Circumstances",5173,45542,0.113587457731325
+"75","2001","Responding to Disturbance Calls",15162,45542,0.332923455272057
+"76","2001","Robberies in Progress or Pursuing Robbery Suspects",493,45542,0.0108251723683633
+"77","2001","Traffic Pursuits and Stops",5192,45542,0.114004655043696
+"78","2002","All Other",5184,44363,0.116854135202759
+"79","2002","Ambush - No Warning",165,44363,0.00371931564592115
+"80","2002","Attempting Other Arrests",7458,44363,0.168113067195636
+"81","2002","Burglaries in Progress or Pursuing Burglary Suspects",659,44363,0.0148547212767396
+"82","2002","Civil Disorder",507,44363,0.0114284426211032
+"83","2002","Handling Persons with Mental Illness",794,44363,0.0178977977143115
+"84","2002","Handling, Transporting, Custody of Prisoners",4786,44363,0.107882695038658
+"85","2002","Investigating Suspicious Persons or Circumstances",4933,44363,0.11119626715957
+"86","2002","Responding to Disturbance Calls",14462,44363,0.325992381038253
+"87","2002","Robberies in Progress or Pursuing Robbery Suspects",398,44363,0.00897144016410071
+"88","2002","Traffic Pursuits and Stops",5017,44363,0.113089736942948
+"89","2003","All Other",5246,42313,0.12398080968024
+"90","2003","Ambush - No Warning",143,42313,0.00337957601682698
+"91","2003","Attempting Other Arrests",7300,42313,0.172523810649209
+"92","2003","Burglaries in Progress or Pursuing Burglary Suspects",618,42313,0.0146054404083851
+"93","2003","Civil Disorder",609,42313,0.0143927398199135
+"94","2003","Handling Persons with Mental Illness",727,42313,0.0171814808687637
+"95","2003","Handling, Transporting, Custody of Prisoners",4283,42313,0.101221846713776
+"96","2003","Investigating Suspicious Persons or Circumstances",4703,42313,0.111147874175785
+"97","2003","Responding to Disturbance Calls",13584,42313,0.321036088199844
+"98","2003","Robberies in Progress or Pursuing Robbery Suspects",431,42313,0.0101859948479191
+"99","2003","Traffic Pursuits and Stops",4669,42313,0.110344338619337
+"100","2004","All Other",5241,43439,0.120651948709685
+"101","2004","Ambush - No Warning",133,43439,0.00306176477359055
+"102","2004","Attempting Other Arrests",7464,43439,0.171827159925413
+"103","2004","Burglaries in Progress or Pursuing Burglary Suspects",654,43439,0.0150555952024678
+"104","2004","Civil Disorder",583,43439,0.0134211192707014
+"105","2004","Handling Persons with Mental Illness",756,43439,0.0174037155551463
+"106","2004","Handling, Transporting, Custody of Prisoners",4552,43439,0.104790625935219
+"107","2004","Investigating Suspicious Persons or Circumstances",4629,43439,0.106563226593614
+"108","2004","Responding to Disturbance Calls",14253,43439,0.328115288105159
+"109","2004","Robberies in Progress or Pursuing Robbery Suspects",439,43439,0.010106125831626
+"110","2004","Traffic Pursuits and Stops",4735,43439,0.109003430097378
+"111","2005","All Other",5383,42505,0.126643924244207
+"112","2005","Ambush - No Warning",124,42505,0.00291730384660628
+"113","2005","Attempting Other Arrests",7489,42505,0.176191036348665
+"114","2005","Burglaries in Progress or Pursuing Burglary Suspects",647,42505,0.015221738618986
+"115","2005","Civil Disorder",573,42505,0.0134807669685919
+"116","2005","Handling Persons with Mental Illness",786,42505,0.0184919421244559
+"117","2005","Handling, Transporting, Custody of Prisoners",4133,42505,0.0972356193389013
+"118","2005","Investigating Suspicious Persons or Circumstances",4476,42505,0.105305258204917
+"119","2005","Responding to Disturbance Calls",13896,42505,0.326926243971297
+"120","2005","Robberies in Progress or Pursuing Robbery Suspects",419,42505,0.00985766380425832
+"121","2005","Traffic Pursuits and Stops",4579,42505,0.107728502529114
+"122","2006","All Other",5841,44356,0.131684552258995
+"123","2006","Ambush - No Warning",143,44356,0.00322391559202814
+"124","2006","Attempting Other Arrests",7555,44356,0.170326449634773
+"125","2006","Burglaries in Progress or Pursuing Burglary Suspects",703,44356,0.0158490395887817
+"126","2006","Civil Disorder",601,44356,0.0135494634322301
+"127","2006","Handling Persons with Mental Illness",810,44356,0.0182613400667328
+"128","2006","Handling, Transporting, Custody of Prisoners",4091,44356,0.0922310397691406
+"129","2006","Investigating Suspicious Persons or Circumstances",4797,44356,0.108147713950762
+"130","2006","Responding to Disturbance Calls",14605,44356,0.329267742808188
+"131","2006","Robberies in Progress or Pursuing Robbery Suspects",426,44356,0.00960411218324466
+"132","2006","Traffic Pursuits and Stops",4784,44356,0.107854630715123
+"133","2007","All Other",5996,45306,0.132344501831987
+"134","2007","Ambush - No Warning",151,45306,0.0033328918906988
+"135","2007","Attempting Other Arrests",7393,45306,0.163179269853882
+"136","2007","Burglaries in Progress or Pursuing Burglary Suspects",730,45306,0.016112656160332
+"137","2007","Civil Disorder",647,45306,0.0142806692270339
+"138","2007","Handling Persons with Mental Illness",829,45306,0.0182977972012537
+"139","2007","Handling, Transporting, Custody of Prisoners",4435,45306,0.0978899042069483
+"140","2007","Investigating Suspicious Persons or Circumstances",4614,45306,0.101840815785989
+"141","2007","Responding to Disturbance Calls",15261,45306,0.336842802277844
+"142","2007","Robberies in Progress or Pursuing Robbery Suspects",408,45306,0.00900542974440471
+"143","2007","Traffic Pursuits and Stops",4842,45306,0.106873261819627
+"144","2008","All Other",6279,45834,0.136994370990967
+"145","2008","Ambush - No Warning",167,45834,0.00364358336606013
+"146","2008","Attempting Other Arrests",7487,45834,0.163350351267618
+"147","2008","Burglaries in Progress or Pursuing Burglary Suspects",713,45834,0.0155561373652747
+"148","2008","Civil Disorder",634,45834,0.013832526072348
+"149","2008","Handling Persons with Mental Illness",819,45834,0.0178688309988218
+"150","2008","Handling, Transporting, Custody of Prisoners",4412,45834,0.0962604180302832
+"151","2008","Investigating Suspicious Persons or Circumstances",4766,45834,0.103983942051752
+"152","2008","Responding to Disturbance Calls",15361,45834,0.33514421608413
+"153","2008","Robberies in Progress or Pursuing Robbery Suspects",470,45834,0.0102543962996902
+"154","2008","Traffic Pursuits and Stops",4726,45834,0.103111227473055
+"155","2009","All Other",5959,45026,0.132345755785546
+"156","2009","Ambush - No Warning",193,45026,0.00428641229511838
+"157","2009","Attempting Other Arrests",7224,45026,0.160440634300182
+"158","2009","Burglaries in Progress or Pursuing Burglary Suspects",705,45026,0.0156576200417537
+"159","2009","Civil Disorder",683,45026,0.0151690134588904
+"160","2009","Handling Persons with Mental Illness",892,45026,0.0198107759960911
+"161","2009","Handling, Transporting, Custody of Prisoners",4550,45026,0.101052725092169
+"162","2009","Investigating Suspicious Persons or Circumstances",4771,45026,0.105961000310931
+"163","2009","Responding to Disturbance Calls",15403,45026,0.342091236174655
+"164","2009","Robberies in Progress or Pursuing Robbery Suspects",468,45026,0.0103939945809088
+"165","2009","Traffic Pursuits and Stops",4178,45026,0.0927908319637543
+"166","2010","All Other",5791,43100,0.134361948955916
+"167","2010","Ambush - No Warning",202,43100,0.00468677494199536
+"168","2010","Attempting Other Arrests",6637,43100,0.153990719257541
+"169","2010","Burglaries in Progress or Pursuing Burglary Suspects",789,43100,0.0183062645011601
+"170","2010","Civil Disorder",657,43100,0.0152436194895592
+"171","2010","Handling Persons with Mental Illness",863,43100,0.0200232018561485
+"172","2010","Handling, Transporting, Custody of Prisoners",4550,43100,0.105568445475638
+"173","2010","Investigating Suspicious Persons or Circumstances",4369,43100,0.101368909512761
+"174","2010","Responding to Disturbance Calls",15189,43100,0.352412993039443
+"175","2010","Robberies in Progress or Pursuing Robbery Suspects",387,43100,0.00897911832946636
+"176","2010","Traffic Pursuits and Stops",3666,43100,0.0850580046403712
+"177","2011","All Other",5364,40376,0.13285119873192
+"178","2011","Ambush - No Warning",155,40376,0.00383891420645928
+"179","2011","Attempting Other Arrests",6421,40376,0.159030116901129
+"180","2011","Burglaries in Progress or Pursuing Burglary Suspects",611,40376,0.0151327521299782
+"181","2011","Civil Disorder",601,40376,0.0148850802456905
+"182","2011","Handling Persons with Mental Illness",919,40376,0.0227610461660392
+"183","2011","Handling, Transporting, Custody of Prisoners",4349,40376,0.107712502476719
+"184","2011","Investigating Suspicious Persons or Circumstances",4133,40376,0.102362789776105
+"185","2011","Responding to Disturbance Calls",14018,40376,0.347186447394492
+"186","2011","Robberies in Progress or Pursuing Robbery Suspects",430,40376,0.0106498910243709
+"187","2011","Traffic Pursuits and Stops",3375,40376,0.0835892609470973
+"188","2012","All Other",5201,40318,0.128999454338013
+"189","2012","Ambush - No Warning",207,40318,0.00513418324321643
+"190","2012","Attempting Other Arrests",6595,40318,0.163574582072523
+"191","2012","Burglaries in Progress or Pursuing Burglary Suspects",600,40318,0.0148816905600476
+"192","2012","Civil Disorder",622,40318,0.0154273525472494
+"193","2012","Handling Persons with Mental Illness",986,40318,0.0244555781536783
+"194","2012","Handling, Transporting, Custody of Prisoners",4508,40318,0.111811101741158
+"195","2012","Investigating Suspicious Persons or Circumstances",4035,40318,0.10007936901632
+"196","2012","Responding to Disturbance Calls",13905,40318,0.344883178729104
+"197","2012","Robberies in Progress or Pursuing Robbery Suspects",389,40318,0.00964829604643087
+"198","2012","Traffic Pursuits and Stops",3270,40318,0.0811052135522595
+"199","2013","All Other",5406,38767,0.139448500012898
+"200","2013","Ambush - No Warning",171,38767,0.00441096809141796
+"201","2013","Attempting Other Arrests",6596,38767,0.170144710707561
+"202","2013","Burglaries in Progress or Pursuing Burglary Suspects",656,38767,0.0169216085846209
+"203","2013","Civil Disorder",443,38767,0.0114272448216266
+"204","2013","Handling Persons with Mental Illness",987,38767,0.025459798282044
+"205","2013","Handling, Transporting, Custody of Prisoners",4126,38767,0.106430727164857
+"206","2013","Investigating Suspicious Persons or Circumstances",3948,38767,0.101839193128176
+"207","2013","Responding to Disturbance Calls",12773,38767,0.329481259834395
+"208","2013","Robberies in Progress or Pursuing Robbery Suspects",386,38767,0.00995692212448732
+"209","2013","Traffic Pursuits and Stops",3275,38767,0.084479067247917
+"210","2014","All Other",4208,36040,0.116759156492786
+"211","2014","Ambush - No Warning",126,36040,0.003496115427303
+"212","2014","Attempting Other Arrests",6313,36040,0.175166481687014
+"213","2014","Burglaries in Progress or Pursuing Burglary Suspects",649,36040,0.018007769145394
+"214","2014","Civil Disorder",578,36040,0.0160377358490566
+"215","2014","Handling Persons with Mental Illness",942,36040,0.0261376248612653
+"216","2014","Handling, Transporting, Custody of Prisoners",4234,36040,0.117480577136515
+"217","2014","Investigating Suspicious Persons or Circumstances",2546,36040,0.0706437291897891
+"218","2014","Responding to Disturbance Calls",13051,36040,0.362125416204218
+"219","2014","Robberies in Progress or Pursuing Robbery Suspects",374,36040,0.010377358490566
+"220","2014","Traffic Pursuits and Stops",3019,36040,0.0837680355160932
+"221","2015","All Other",5495,39739,0.13827725911573
+"222","2015","Ambush - No Warning",186,39739,0.00468054052693827
+"223","2015","Attempting Other Arrests",6501,39739,0.163592440675407
+"224","2015","Burglaries in Progress or Pursuing Burglary Suspects",686,39739,0.0172626387176326
+"225","2015","Civil Disorder",530,39739,0.0133370240821359
+"226","2015","Handling Persons with Mental Illness",1313,39739,0.0330405898487632
+"227","2015","Handling, Transporting, Custody of Prisoners",3979,39739,0.100128337401545
+"228","2015","Investigating Suspicious Persons or Circumstances",3920,39739,0.0986436498150432
+"229","2015","Responding to Disturbance Calls",13739,39739,0.345730894083897
+"230","2015","Robberies in Progress or Pursuing Robbery Suspects",322,39739,0.00810287123480712
+"231","2015","Traffic Pursuits and Stops",3068,39739,0.0772037544981001
+"232","2016","All Other",6300,45374,0.138846035174329
+"233","2016","Ambush - No Warning",224,45374,0.00493674791730947
+"234","2016","Attempting Other Arrests",7497,45374,0.165226781857451
+"235","2016","Burglaries in Progress or Pursuing Burglary Suspects",613,45374,0.0135099396129942
+"236","2016","Civil Disorder",673,45374,0.0148322828051307
+"237","2016","Handling Persons with Mental Illness",1480,45374,0.0326177987393662
+"238","2016","Handling, Transporting, Custody of Prisoners",4919,45374,0.108410102701988
+"239","2016","Investigating Suspicious Persons or Circumstances",4502,45374,0.0992198175166395
+"240","2016","Responding to Disturbance Calls",15275,45374,0.336646537664742
+"241","2016","Robberies in Progress or Pursuing Robbery Suspects",438,45374,0.0096531053025962
+"242","2016","Traffic Pursuits and Stops",3453,45374,0.0761008507074536
+"243","2017","All Other",5875,35600,0.16502808988764
+"244","2017","Ambush - No Warning",167,35600,0.00469101123595506
+"245","2017","Attempting Other Arrests",5775,35600,0.162219101123595
+"246","2017","Burglaries in Progress or Pursuing Burglary Suspects",573,35600,0.0160955056179775
+"247","2017","Civil Disorder",520,35600,0.0146067415730337
+"248","2017","Handling Persons with Mental Illness",1074,35600,0.0301685393258427
+"249","2017","Handling, Transporting, Custody of Prisoners",3882,35600,0.109044943820225
+"250","2017","Investigating Suspicious Persons or Circumstances",3524,35600,0.0989887640449438
+"251","2017","Responding to Disturbance Calls",11220,35600,0.315168539325843
+"252","2017","Robberies in Progress or Pursuing Robbery Suspects",305,35600,0.00856741573033708
+"253","2017","Traffic Pursuits and Stops",2685,35600,0.0754213483146067
+"254","2018","All Other",5045,37403,0.134882228698233
+"255","2018","Ambush - No Warning",157,37403,0.00419752426275967
+"256","2018","Attempting Other Arrests",6624,37403,0.177098093735797
+"257","2018","Burglaries in Progress or Pursuing Burglary Suspects",541,37403,0.0144640804213566
+"258","2018","Civil Disorder",385,37403,0.0102932919819266
+"259","2018","Handling Persons with Mental Illness",1231,37403,0.0329117985188354
+"260","2018","Handling, Transporting, Custody of Prisoners",4162,37403,0.111274496698126
+"261","2018","Investigating Suspicious Persons or Circumstances",3841,37403,0.102692297409299
+"262","2018","Responding to Disturbance Calls",12394,37403,0.331363794348047
+"263","2018","Robberies in Progress or Pursuing Robbery Suspects",362,37403,0.00967836804534396
+"264","2018","Traffic Pursuits and Stops",2661,37403,0.071144025880277
+"265","2019","All Other",4555,33513,0.135917405186047
+"266","2019","Ambush - No Warning",138,33513,0.00411780503088354
+"267","2019","Attempting Other Arrests",6121,33513,0.182645540536508
+"268","2019","Burglaries in Progress or Pursuing Burglary Suspects",408,33513,0.0121743800913079
+"269","2019","Civil Disorder",329,33513,0.00981708590696148
+"270","2019","Handling Persons with Mental Illness",1072,33513,0.0319875869065736
+"271","2019","Handling, Transporting, Custody of Prisoners",3930,33513,0.117267925879509
+"272","2019","Investigating Suspicious Persons or Circumstances",3478,33513,0.103780622445021
+"273","2019","Responding to Disturbance Calls",10803,33513,0.322352519917644
+"274","2019","Robberies in Progress or Pursuing Robbery Suspects",268,33513,0.00799689672664339
+"275","2019","Traffic Pursuits and Stops",2411,33513,0.0719422313729001

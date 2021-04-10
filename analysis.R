@@ -71,20 +71,14 @@ unique(df$DIVISION_NAME)
 unique(df$REGION_NAME)
 unique(df$AGENCY_TYPE_NAME)
 
-# Rename the Possessions population group.
-pop <- unique(df$POPULATION_GROUP_DESC)
-df <- df %>%
-  mutate(POPULATION_GROUP_DESC = 
-           case_when(POPULATION_GROUP_DESC == pop[20] ~ "Possessions",
-                     TRUE ~ POPULATION_GROUP_DESC))
-
 # Check COUNTY_NAME for numeric and NA values.
 indices <- grepl(paste("\b[[:digit:]]\b", collapse = "|"), df$COUNTY_NAME)
 unique(indices)
 indices <- is.na(df$COUNTY_NAME)
 unique(indices)
 # NA values exist. Drop them.
-df <- df[-indices, ]
+x <- df[-indices, ]
+
 
 # There are too many activity IDs.
 unique(df$ACTIVITY_ID)
@@ -114,7 +108,6 @@ str(df)
 
 # Convert quantitative variables to numeric.
 df[, 12:23] <- sapply(df[, 12:23], as.numeric)
-str(df)
 
 # Confirm the structure output.
 str(df)
@@ -387,3 +380,7 @@ percentageActByYear <- percentageActByYear %>%
 colnames(percentageActByYear)[3:4] <- c("activityTotals", "yearlyTotals")
 
 percentageActByYear
+
+# For Connor: Year, Region, Activity, One Officer, Two Officer.
+
+df
