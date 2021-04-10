@@ -77,7 +77,7 @@ unique(indices)
 indices <- is.na(df$COUNTY_NAME)
 unique(indices)
 # NA values exist. Drop them.
-x <- df[-indices, ]
+df <- df[-indices, ]
 
 
 # There are too many activity IDs.
@@ -262,7 +262,8 @@ df <- df %>%
 # 2. Create new sets ------------------------------------------------------
 
 # Get the column names for officer and assault types
-meta <- colnames(df)[1:11]
+meta <- colnames(df)[1:9]
+activities <- colnames(df)[10:11]
 officerType <- colnames(df)[12:18]
 assaultType <- colnames(df)[19:22]
 
@@ -281,47 +282,52 @@ df <- df %>%
   mutate(assaultsConducted = rowSums(df[, assaultType])) %>%
   filter(officersAssaulted == assaultsConducted)
 # Only 250 records were dropped (out of 2.2mil).
-
+write.csv(df, "output/validation.csv")
 
 # TASK 2: Aggregated. Create four datasets to view different facets of the data.
 
 # DATASET 1: Number of officers assaulted, whole set. 
-totalAssaults <- df[, c(meta, "officersAssaulted")]
+totalAssaults <- df[, c(meta, activities, "officersAssaulted")]
 
 
 # DATASET 2: Number of officers assaulted, by year.
 totalAssaultsByYear <- totalAssaults %>%
   group_by(DATA_YEAR) %>%
-  tally(officersAssaulted)
-
+  tally(officersAssaulted, name = "officersAssaulted")
+summary(totalAssaultsByYear)
+write.csv(totalAssaultsByYear, "output/totalAssaultsByYear.csv")
 
 # DATASET 3: Number of officers assaulted, by region.
 totalAssaultsByRegion <- totalAssaults %>%
   group_by(REGION_NAME) %>%
-  tally(officersAssaulted)
+  tally(officersAssaulted, name = "officersAssaulted")
+write.csv(totalAssaultsByRegion, "output/totalAssaultsByRegion.csv")
 
 
 # DATASET 3.5: Bonus -- By year and region.
 totalAssaultsYrRg <- totalAssaults %>%
   group_by(DATA_YEAR, REGION_NAME) %>%
-  tally(officersAssaulted)
+  tally(officersAssaulted, name = "officersAssaulted")
 totalAssaultsYrRg
+write.csv(totalAssaultsYrRg, "output/totalAssaultsByRegionAndYear.csv")
 
 # Bonus time-series graph with regression line.
 ggplot(totalAssaultsYrRg, 
-       aes(x = as.numeric(DATA_YEAR), y = n, col = REGION_NAME)) +
+       aes(x = as.numeric(DATA_YEAR), y = officersAssaulted, 
+           col = REGION_NAME)) +
   geom_line(linetype = "dashed") +
-  geom_smooth(formula = "y ~ x", method = "loess", se = FALSE, size = 1) +
+  geom_smooth(formula = "y ~ x", method = "loess", 
+              se = FALSE, size = 1) +
   labs(title = "LEOKA by Region over Time",
        x = "Year",
        y = "Total LEOKA") +
   theme_minimal()
-
+ggsave("output/totalAssaultsByRegionAndYear.PNG")
 
 # DATASET 4: Ratios of activity
 
 # Get the names of all three columns that represent alone LEO
-aloneCols <- colnames(activities)[3:5]
+aloneCols <- officerType[c(2,4, 6)]
 aloneCols
 
 # Get the LEOKA sum for two officers and alone officers (by activity)
@@ -358,7 +364,7 @@ activitiesWithRatios
 # Because of this, average ratio for "alone" in Ratio2 is 6% "more dangerous".
 # Are we okay this? Does this represent reality to the best of our ability,
 # given the dataset that we have?
-
+write.csv(activitiesWithRatios,"output/activitiesWithRatios.csv")
 
 # Bonus bonus: "Percentage of activities per year"
 
@@ -374,13 +380,11 @@ percentageActByYear <- inner_join(totalAssaultsByYrAct,
                                   by = "DATA_YEAR")
 
 percentageActByYear <- percentageActByYear %>%
-  mutate(ratio = n.x/n.y)
+  mutate(ratio = n/officersAssaulted)
 
 # Rename columns for ease of understanding
 colnames(percentageActByYear)[3:4] <- c("activityTotals", "yearlyTotals")
 
 percentageActByYear
 
-# For Connor: Year, Region, Activity, One Officer, Two Officer.
-
-df
+write.csv(percentageActByYear, "output/percentageActivitiesByYear.csv")
