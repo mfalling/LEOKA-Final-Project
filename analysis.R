@@ -12,6 +12,7 @@ df <- read.csv("data/LEOKA_1995_2019.csv", na.strings = "")
 # Get data structure
 str(df)
 
+colnames(df)
 
 # Clean Data --------------------------------------------------------------
 
@@ -253,7 +254,7 @@ ggplot(LEOKA.act, aes(x = DATA_YEAR, y = totals.act)) +
 # Per group discussions, subset the data:
 # 1. Filter to cities only (drop MSA and Counties)
 # 2. Remove U.S Territories
-# checkpoint <- df
+
 df <- df %>%
   filter(grepl("Cities", POPULATION_GROUP_DESC)) %>%
   filter(REGION_NAME != "U.S. Territories")
@@ -388,3 +389,21 @@ colnames(percentageActByYear)[3:4] <- c("activityTotals", "yearlyTotals")
 percentageActByYear
 
 write.csv(percentageActByYear, "output/percentageActivitiesByYear.csv")
+
+
+# -------------------------------------------------------------------------
+
+# After April 11, 2021 meeting.
+# Create new subset aggregating data into 5-year chunks and grouped by state.
+
+test <- df
+test$DATA_YEAR <- gsub(paste(years[1:5], collapse = "|"), "'95-'99", df$DATA_YEAR)
+test$DATA_YEAR <- gsub(paste(years[6:10], collapse = "|"), "'00-'04", test$DATA_YEAR)
+test$DATA_YEAR <- gsub(paste(years[11:15], collapse = "|"), "'05-'09", test$DATA_YEAR)
+test$DATA_YEAR <- gsub(paste(years[16:20], collapse = "|"), "'10-'14", test$DATA_YEAR)
+test$DATA_YEAR <- gsub(paste(years[21:25], collapse = "|"), "'15-'19", test$DATA_YEAR)
+
+AssaultsByStateAndYear <- test %>%
+  group_by(DATA_YEAR, STATE_ABBR) %>%
+  tally(officersAssaulted, name = "officersAssaulted")
+write.csv(AssaultsByStateAndYear, "output/AssaultsByStateAndYear.csv")
