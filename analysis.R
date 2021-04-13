@@ -16,110 +16,37 @@ colnames(df)
 
 # Clean Data --------------------------------------------------------------
 
-# Create a vector of the dimensions (qualitative variables)
-# This will be used to filter the dataset during exploration
-dimensions <- colnames(df)[1:11]
-
-# Get number of unique values
-uniqueCheck <- function(df){
-  uniqueValues <- df %>%
-    select(dimensions) %>%
-    summarise_all(n_distinct) %>%
-    t() %>%
-    as.data.frame() %>%
-    tibble::rownames_to_column() %>%
-    rename(variables = rowname, unique = V1)
-  return(uniqueValues)
-}
-
-# View results
-uniqueValues <- uniqueCheck(df)
-uniqueValues
-
-# Expecting 25 years, but column has 42 unique values. Check DATA_YEAR.
-unique(df$DATA_YEAR)
-
-# This column contains non-year values that need to be dropped.
-# Capture the real years in a vector, called `years`.
-# Get a list of indices of records that have real years.
-# Remove all non-year values from the dataframe.
-# Double-check DATA_YEAR to confirm the drop.
+# Drop non-year values from DATA_YEAR
 years <- unique(df$DATA_YEAR)[1:25]
 indices <- grepl(paste(years, collapse = "|"), df$DATA_YEAR)
 df <- df[indices, ]
 unique(df$DATA_YEAR)
 
-# Update uniqueValues
-uniqueValues <- uniqueCheck(df)
-uniqueValues
-
-unique(df$PUB_AGENCY_NAME)
-# Too many unique values to manually determine potential inaccuracies.
-# Check for 100% numeric values (operating assumption: No agency name is entirely numeric)
-# Then, check for NA values.
-indices <- grepl(paste("\b[[:digit:]]\b", collapse = "|"), df$PUB_AGENCY_NAME)
-unique(indices)
-indices <- is.na(df$PUB_AGENCY_NAME)
-unique(indices)
-# No 100% numeric or NA values.
-
-# Check state abbreviations; 53 are listed.
-unique(df$STATE_ABBR)
-# 50 states, DC, Guam, and Virgin Islands.
-
-# Check values. If there are no issues, move on.
-unique(df$DIVISION_NAME)
-unique(df$REGION_NAME)
-unique(df$AGENCY_TYPE_NAME)
-
-# Check COUNTY_NAME for numeric and NA values.
-indices <- grepl(paste("\b[[:digit:]]\b", collapse = "|"), df$COUNTY_NAME)
-unique(indices)
+# Drop NA values from COUNTY_NAME
 indices <- is.na(df$COUNTY_NAME)
-unique(indices)
-# NA values exist. Drop them.
 df <- df[-indices, ]
 
-
-# There are too many activity IDs.
-unique(df$ACTIVITY_ID)
-# Check the activity names for clues on what to drop.
-unique(df$ACTIVITY_NAME)
-
-# Some of these activity names are numeric values, but they should be descriptive words.
-# Capture the real activity names in a vector, called `activityType`.
-# Get a list of indices of records that have real names.
-# Remove all numeric values from the dataframe.
-# Double-check ACTIVITY_NAME to confirm the drop.
+# Drop inaccurate values from ACTIVITY_NAME
 activityType <- unique(df$ACTIVITY_NAME)[1:11]
 indices <- grepl(paste(activityType, collapse = "|"), df$ACTIVITY_NAME)
 df <- df[indices, ]
 
-# Confirm activity names and IDs are updated appropriately.
-unique(df$ACTIVITY_NAME)
-unique(df$ACTIVITY_ID)
-
-# Rerun unique checker.
-uniqueValues <- uniqueCheck(df)
-uniqueValues
-
-# Unique values look representative of real data.
-# Check structure
-str(df)
-
 # Convert quantitative variables to numeric.
 df[, 12:23] <- sapply(df[, 12:23], as.numeric)
 
-# Confirm the structure output.
-str(df)
+# Save the dataframe for preliminary exploration.
+prelimdf <- df
 
-# Data now consists of 11 character variables and 12 numeric variables
+# Filter to Cities and drop Territories.
+df <- df %>%
+  filter(grepl("Cities", POPULATION_GROUP_DESC)) %>%
+  filter(REGION_NAME != "U.S. Territories")
 
 # Preliminary Exploration -------------------------------------------------
 
 ## COUNTS BY REGION
 # Group by region and get sums of numeric variables.
-LEOKA.reg <- df %>%
+LEOKA.reg <- prelimdf %>%
   group_by(REGION_NAME) %>%
   summarise_if(is.numeric, sum)
 LEOKA.reg
@@ -140,7 +67,7 @@ cbind(LEOKA.reg[1], totals.reg, LEOKA.reg[13], percentCleared) %>%
 
 ## COUNTS BY POPULATION
 options(scipen = 999)
-df %>%
+prelimdf %>%
   group_by(POPULATION_GROUP_DESC) %>%
   tally() %>%
   ggplot(aes(x = reorder(POPULATION_GROUP_DESC, -n), y = n)) +
@@ -153,7 +80,7 @@ df %>%
 
 ##
 # Group by ACTIVITY_NAME, DATA_YEAR and get sums of numeric variables.
-LEOKA.act <- df %>%
+LEOKA.act <- prelimdf %>%
   group_by(ACTIVITY_NAME, DATA_YEAR) %>%
   summarise_if(is.numeric, sum)
 
@@ -186,7 +113,7 @@ ggplot(LEOKA.act, aes(x = DATA_YEAR, y = totals.act)) +
 trending <- activityType[c(1, 4, 10)]
 
 # Filter the dataset to only trending activities in cities.
-cleaned <- df %>%
+cleaned <- prelimdf %>%
   filter(grepl(paste(trending, collapse = "|"), ACTIVITY_NAME)) 
 
 # Dataset filtered to 609229 observations
