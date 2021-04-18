@@ -117,7 +117,8 @@ v1 <-
 ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals)) +
   geom_bar(data = df1.Act_Yr_bg, stat = "identity", 
            fill = "grey", alpha = .5, aes(y = activityTotals)) +
-  geom_bar(stat = "identity", aes(y = activityTotals, fill = ACTIVITY_NAME)) +
+  geom_bar(stat = "identity", color = "white",
+           aes(y = activityTotals, fill = ACTIVITY_NAME)) +
   facet_wrap(~ factor(ACTIVITY_NAME, levels = df1.flevels),
         ncol = 3, scales = "free") +
   geom_text(data = df1.Act_Yr_ss, vjust=-1, hjust=1,
