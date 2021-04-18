@@ -117,7 +117,8 @@ v1 <-
 ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals)) +
   geom_bar(data = df1.Act_Yr_bg, stat = "identity", 
            fill = "grey", alpha = .5, aes(y = activityTotals)) +
-  geom_bar(stat = "identity", aes(y = activityTotals, fill = ACTIVITY_NAME)) +
+  geom_bar(stat = "identity", color = "white", size = 0.1,
+           aes(y = activityTotals, fill = ACTIVITY_NAME)) +
   facet_wrap(~ factor(ACTIVITY_NAME, levels = df1.flevels),
         ncol = 3, scales = "free") +
   geom_text(data = df1.Act_Yr_ss, vjust=-1, hjust=1,
@@ -127,6 +128,7 @@ ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals)) +
   theme_solarized() +
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer(palette = "Set2")
+
 
 # Proportion stacked
 
@@ -145,7 +147,8 @@ ggplot(data = df1.Act_Yr,
 
 v3 <-
 ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals, )) +
-  geom_bar(stat = "identity", aes(y = activityTotals)) +
+  geom_bar(stat = "identity", color = "white", size = 0.1, 
+           aes(y = activityTotals)) +
   geom_smooth(method = lm, size = 1.5, show.legend = FALSE, 
               aes(color = "orange3")) +
   facet_wrap(~ factor(ACTIVITY_NAME, levels = df1.flevels),
