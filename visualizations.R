@@ -1,3 +1,4 @@
+
 # Set Working Directory ---------------------------------------------------
 setwd("C:/data/Final_Project")
 
@@ -129,7 +130,6 @@ ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals)) +
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer(palette = "Set2")
 
-
 # Proportion stacked
 
 v2 <- 
@@ -218,13 +218,25 @@ ggplot() +
 head(df3.Aslt_St_2015_to_2019[
   order(-df3.Aslt_St_2015_to_2019$officersAssaultedAverage),],5)
 
+v7 <- 
+  ggplot(df5.Aslt_Reg_Yr,
+         aes(x = as.numeric(DATA_YEAR), y = officersAssaulted,
+             col = REGION_NAME)) +
+  geom_line(linetype = "dashed") +
+  geom_smooth(formula = "y ~ x", method = "loess",
+              se = FALSE, size = 1) +
+  labs(title = "LEOKA", subtitle = "by Region over Time",
+       x = "Year",
+       y = "Count") +
+  theme_solarized()
+
 ### Editorial ###
 
 # "Out of 100 Officers..."; Personograph, average 10 years [TO-DO?]
 # ???
 
 # Save & Compile ----------------------------------------------------------
-plots.list = list(v1,v2,v3,v4,v5,v6)
+plots.list = list(v1,v2,v3,v4,v5,v7,v6)
 pdf("Visualizations.pdf", paper = "a4r", width = 11.349, height = 8.051)
 print(plots.list)
 dev.off()
