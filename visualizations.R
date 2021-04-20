@@ -86,6 +86,11 @@ df2.Act_Ratio$ACTIVITY_NAME <- as.factor(df2.Act_Ratio$ACTIVITY_NAME)
 df2.Act_Ratio$ACTIVITY_NAME <- ordered(df2.Act_Ratio$ACTIVITY_NAME, 
                                        levels = df2.flevels)
 
+df2.Act_Ratio_ss <-       #subset for highlighing
+  subset(df2.Act_Ratio, 
+         ACTIVITY_NAME == "Handling, Transporting, Custody of Prisoners" |
+         ACTIVITY_NAME == "Traffic Pursuits and Stops")
+
 ### df3.Aslt_St_Yr ###
 
 df3.Aslt_St_Yr <- df3.Aslt_St_Yr[,c(-1)]  #Remove unused col
@@ -158,6 +163,7 @@ ggplot(data = df1.Act_Yr,
 
 # Activities Change over time; % change facets
 # df1.Act_Yr (percentageActivitiesByYear.csv)
+
 my.formula <- y ~ x
 v3 <-
 ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals, )) +
@@ -177,50 +183,25 @@ ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals, )) +
   theme_solarized() +
   theme(legend.position = "none", plot.title = element_text(hjust = 0))
 
-# Number of Officers; 100% stacked chart
+# Alone Percentages by Activity
 # df2.Act_Ratio (activitiesWithRatios.csv)
 
-# Using Ratio1
 v4 <-
-ggplot(data = df2.Act_Ratio, aes(x = ACTIVITY_NAME)) +
-  geom_bar(stat = "identity", aes(y = aloneRatio1*-1, fill = "Alone")) +
-  geom_bar(stat = "identity", aes(y = partnerRatio1, fill = "With Partner")) +
+ggplot(data = df2.Act_Ratio, aes(x = reorder(ACTIVITY_NAME, aloneRatio1*1))) +
+  geom_bar(stat = "identity", fill = "lightblue", aes(y = aloneRatio1*1)) +
+  geom_bar(data = df2.Act_Ratio_ss, stat = "identity",
+           fill = "red4", aes(y = aloneRatio1*1)) +
   coord_flip() +
-  scale_y_continuous(breaks = seq(-0.6, 0.6, 0.2), 
+  scale_y_continuous(breaks = seq(0, 0.7, 0.1), 
                      labels = paste0(as.character(
-                       c("60","40","20","0","20","40","60")), "%")) +
-  labs(title = "Officer Activity: Alone vs. With Partner",
-       subtitle = "Ratio 1",
+                       c("0","10","20","30","40","50","60","70")), "%")) +
+  labs(title = "Percentage of LEOKA Incidents Where Officer Was Alone",
        x = "", y = "Percentage") +
   theme_solarized() +
-  theme(legend.title = element_blank()) +
-  scale_fill_brewer(palette = "Paired")
+  theme(legend.title = element_blank())
 
-# Using Ratio2
+
 v5 <-
-ggplot(data = df2.Act_Ratio, aes(x = ACTIVITY_NAME)) +
-  geom_bar(stat = "identity", aes(y = aloneRatio2*-1, fill = "Alone")) +
-  geom_bar(stat = "identity", aes(y = partnerRatio2, fill = "With Partner")) +
-  coord_flip() +
-  scale_y_continuous(breaks = seq(-0.6, 0.6, 0.2), 
-                     labels = paste0(as.character(
-                       c("60","40","20","0","20","40","60")), "%")) +
-  labs(title = "Officer Activity: Alone vs. With Partner",
-       subtitle = "Ratio 2",
-       x = "", y = "Percentage") +
-  theme_solarized() +
-  theme(legend.title = element_blank()) +
-  scale_fill_brewer(palette = "Dark2")
-
-### Geo-spatial ###
-
-# Regional Comparison; Col chart OR R Maps
-# df4.Aslt_Reg (totalAssaultsByRegion.csv) 
-# df5.Aslt_Reg_Yr (totalAssaultsByRegionAndYear.csv)
-
-# State Comparison; Brewer heat map, R Maps
-# df3.Aslt_St_Yr (AssaultsByStateAndYear.csv)
-v6 <-
 ggplot() + 
   geom_polygon(data=MergedStates, aes(x=long, y=lat, group=group,
                     fill = officersAssaulted/Five_Year_Avg_Pop * 100000), 
@@ -235,7 +216,10 @@ ggplot() +
   theme_solarized() +
   coord_fixed()
 
-v7 <- 
+# Region Comparison; Line Chart
+# MergedRegions = df5.Aslt_Reg_Yr + df7.US_Pop
+
+v6 <- 
   ggplot(MergedRegions,
          aes(x = as.numeric(DATA_YEAR), 
              y = officersAssaulted/Five_Year_Avg_Pop * 100000,
@@ -248,7 +232,8 @@ v7 <-
   theme_solarized()
 
 # Save & Compile ----------------------------------------------------------
-plots.list = list(v1,v2,v3,v4,v5,v6,v7)
+plots.list = list(v1,v2,v3,v4,v5,v6)
 pdf("Visualizations.pdf", paper = "a4r", width = 11.349, height = 8.051)
 print(plots.list)
 dev.off()
+
