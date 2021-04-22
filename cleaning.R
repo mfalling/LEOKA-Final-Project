@@ -9,7 +9,7 @@ library(factoextra)
 
 # Read data
 df <- read.csv("data/LEOKA_1995_2019.csv", na.strings = "")
-
+str(df)
 
 
 
@@ -90,8 +90,11 @@ totalAssaults <- df[, c(meta, activities, "officersAssaulted")]
 # DATASET 2: Number of officers assaulted by year.
 Aslt_Yr <- totalAssaults %>%
   group_by(DATA_YEAR) %>%
-  tally(officersAssaulted, name = "officersAssaulted")
+  tally(officersAssaulted, name = "officersAssaulted") %>%
+  as.data.frame()
+head(Aslt_Yr)
 summary(Aslt_Yr)
+
 write.csv(Aslt_Yr, "output/totalAssaultsByYear.csv")
 
 
@@ -102,7 +105,9 @@ write.csv(Aslt_Yr, "output/totalAssaultsByYear.csv")
 # DATASET 3: Number of officers assaulted, by region.
 Aslt_Reg <- totalAssaults %>%
   group_by(REGION_NAME) %>%
-  tally(officersAssaulted, name = "officersAssaulted")
+  tally(officersAssaulted, name = "officersAssaulted") %>%
+  as.data.frame()
+head(Aslt_Reg)
 summary(Aslt_Reg)
 write.csv(Aslt_Reg, "output/totalAssaultsByRegion.csv")
 
@@ -114,7 +119,9 @@ write.csv(Aslt_Reg, "output/totalAssaultsByRegion.csv")
 # DATASET 3.5: Bonus -- By year and region.
 Aslt_Reg_Yr <- totalAssaults %>%
   group_by(DATA_YEAR, REGION_NAME) %>%
-  tally(officersAssaulted, name = "officersAssaulted")
+  tally(officersAssaulted, name = "officersAssaulted") %>%
+  as.data.frame()
+head(Aslt_Reg_Yr)
 summary(Aslt_Reg_Yr)
 write.csv(Aslt_Reg_Yr, "output/totalAssaultsByRegionAndYear.csv")
 
@@ -130,7 +137,9 @@ aloneCols <- officerType[c(2,4, 6)]
 Act_Sums <- df %>%
   group_by(ACTIVITY_NAME) %>%
   summarise_at(c("TWO_OFFICER_VEHICLE_ACTUAL", 
-                 aloneCols), sum)
+                 aloneCols), sum) %>%
+  as.data.frame()
+head(Act_Sums)
 Act_Sums
 
 # For convenience, get the rowSums prior to making the ratios below.
@@ -146,23 +155,8 @@ Act_Ratio <- Act_Sums %>%
            (TWO_OFFICER_VEHICLE_ACTUAL + aloneSums)) %>%
   mutate(aloneRatio2 = (aloneSums)/
            (TWO_OFFICER_VEHICLE_ACTUAL + aloneSums))
-
-Act_Ratio
-# Notice the % differences when looking at the columns for Ratio1 vs Ratio2:
-# Ratio1 considers two columns: 
-#      1. TWO_OFFICER_VEHICLE_ACTUAL
-#      2. ONE_OFFICER_ALONE_ACTUAL
-# Ratio2 considers four columns: 
-#      1. TWO_OFFICER_VEHICLE_ACTUAL
-#      2. ONE_OFFICER_ALONE_ACTUAL
-#      3. DET_SPE_ASS_ALONE_ACTUAL
-#      4. OTHER_ALONE_ACTUAL
-# Because of this, average ratio for "alone" in Ratio2 is 6% "more dangerous".
-# Are we okay this? Does this represent reality to the best of our ability,
-# given the dataset that we have?
+head(Act_Ratio)
 write.csv(Act_Ratio,"output/activitiesWithRatios.csv")
-
-
 
 
 # Subset 5: Percentage of Activities By Year ------------------------------
@@ -185,6 +179,7 @@ Act_Yr <- Act_Yr %>%
 colnames(Act_Yr)[3:4] <- c("activityTotals", "yearlyTotals")
 
 
+head(Act_Yr)
 
 write.csv(Act_Yr, "output/percentageActivitiesByYear.csv")
 
@@ -203,16 +198,11 @@ Aslt_St_Yr$DATA_YEAR <- gsub(paste(years[21:25], collapse = "|"), "'15-'19", Asl
 Aslt_St_Yr <- Aslt_St_Yr %>%
   group_by(DATA_YEAR, STATE_ABBR) %>%
   tally(officersAssaulted, name = "officersAssaulted")
+head(Aslt_St_Yr)
 write.csv(Aslt_St_Yr, "output/AssaultsByStateAndYear.csv")
 
 
-
-# Subset 7: Normalized by population --------------------------------------
-
-
-
-
-# Subset 8: Decision Trees ------------------------------------------------
+# Subset 7: Decision Trees ------------------------------------------------
 
 # Create categorical column based on whether a record reported a LEOKA
 df$assault <- ifelse(test = df$officersAssaulted > 0, 
@@ -224,5 +214,18 @@ Recent_Cats <- df %>%
   select(DATA_YEAR, REGION_NAME, AGENCY_TYPE_NAME, POPULATION_GROUP_DESC,
          ACTIVITY_ID, ACTIVITY_NAME, assault) %>%
   filter(DATA_YEAR %in% years[21:25])
+head(Recent_Cats)
 write.csv(Recent_Cats, "output/Recent_Cats.csv")
 
+
+
+#   -----------------------------------------------------------------------
+
+# For linear regression, matching the Decision Tree specifications
+# Note: This was ultimately not used.
+Act_Yr_Filtered <- df %>%
+  filter(POPULATION_GROUP_DESC %in% unique(df$POPULATION_GROUP_DESC)[c(3, 4, 6, 7, 8, 9)]) %>%
+  filter(DATA_YEAR %in% years[21:25]) %>%
+  group_by(DATA_YEAR, ACTIVITY_NAME) %>%
+  tally(officersAssaulted)
+head(Act_Yr_Filtered)

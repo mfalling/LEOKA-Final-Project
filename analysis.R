@@ -38,53 +38,7 @@ pivotWider <- function(Act_Yr){
 
 Act_Yr <- Act_Yr[, 2:4]
 Act_Yr_Wide <- pivotWider(Act_Yr)
-
-# Linear Regression -------------------------------------------------------
-
-# From https://www.datacamp.com/community/tutorials/linear-regression-R
-
-# Best Fit: `Handling Persons with Mental Illness` at p < 0.000000140 ***
-#            with an Adjusted R2 of .7025
-bestfit <- lm(`Handling Persons with Mental Illness` ~ Year, data = Act_Yr_Wide)
-summary(bestfit)
-
-# Extract the statistics for `Handling Persons with Mental Illness`
-Mental_Ill <- Act_Yr_Wide[, c(1, 7)]
-
-# Plot the linear regression
-png(file = "LinearRegression.png")
-plot(Mental_Ill, type = "l",
-     main = "LEOKA increasing by 25 officers each year \ndue to Handling Persons with Mental Illness",
-     sub = "P-Value for Year < 0.000000140 ***, Adjusted R2 = 0.7025",
-     xlab = "Year",
-     ylab = "Total LEOKA per year")
-abline(bestfit, col = "red")
-dev.off()
-
-
-# Poor performing linear models, based on Adjusted R2
-
-# *** but Adjusted R2 = 0.5984
-badfit1 <- lm(`Robberies in Progress or Pursuing Robbery Suspects` ~ Year, data = Act_Yr_Wide)
-summary(badfit1)
-
-# *** but Adjusted R2 = 0.5853 
-badfit2 <- lm(`Traffic Pursuits and Stops` ~ Year, data = Act_Yr_Wide)
-summary(badfit2)
-
-# *** but Adjusted R2 = 0.5545 
-badfit3 <- lm(`Investigating Suspicious Persons or Circumstances` ~ Year, data = Act_Yr_Wide)
-summary(badfit3)
-
-# ** but Adjusted R2 = 0.276 
-badfit4 <- lm(`Handling, Transporting, Custody of Prisoners` ~ Year, data = Act_Yr_Wide)
-summary(badfit4)
-
-# * but Adjusted R2 = 0.1242 
-badfit5 <- lm(`Burglaries in Progress or Pursuing Burglary Suspects` ~ Year, data = Act_Yr_Wide)
-summary(badfit5)
-
-
+write.csv(Act_Yr_Wide, "output/Act_Yr_Wide.csv")
 
 # Read and Clean Data -----------------------------------------------------
 
@@ -110,6 +64,7 @@ Recent_Cats$Population <- gsub("thru", "-", Recent_Cats$Population)
 # As per pg 207, set the minimum observations to 10% of the dataset size.
 observations <- nrow(Recent_Cats)*0.1
 nrow(Recent_Cats)*0.10
+colnames(Recent_Cats)
 
 # Run, view, and plot model.
 fit <- rpart(assault ~ ., 
@@ -127,16 +82,16 @@ rpart.plot(fit,
 
 
 # Because the decision tree splits at "Under 25k" and "Over 25k", I'm changing the factors to reflect this.
-dt$Population <- factor(dt$Population)
-levels(dt$Population)[levels(dt$Population) == "under 2,500"] <- "Under 25k"
-levels(dt$Population)[levels(dt$Population) == "2,500 - 9,999"] <- "Under 25k"
-levels(dt$Population)[levels(dt$Population) == "10,000 - 24,999"] <- "Under 25k"
-levels(dt$Population)[levels(dt$Population) == "25,000 - 49,999"] <- "Over 25k"
-levels(dt$Population)[levels(dt$Population) == "50,000 - 99,999"] <- "Over 25k"
-levels(dt$Population)[levels(dt$Population) == "100,000 - 249,999"] <- "Over 25k"
-levels(dt$Population)[levels(dt$Population) == "250,000 - 499,999"] <- "Over 25k"
-levels(dt$Population)[levels(dt$Population) == "500,000 - 999,999"] <- "Over 25k"
-levels(dt$Population)[levels(dt$Population) == "1,000,000 or over"] <- "Over 25k"
+Recent_Cats$Population <- factor(Recent_Cats$Population)
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "under 2,500"] <- "Under 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "2,500 - 9,999"] <- "Under 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "10,000 - 24,999"] <- "Under 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "25,000 - 49,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "50,000 - 99,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "100,000 - 249,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "250,000 - 499,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "500,000 - 999,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "1,000,000 or over"] <- "Over 25k"
 
 
 
@@ -151,9 +106,6 @@ rpart.plot(fit,
            extra = 2, 
            clip.right.labs = FALSE, 
            varlen = 0, 
-           faclen = 0)
-
-# To Do: Make the ACTIVITY_ID more aesthetically pleasing to look at (e.g., recode)
-
-
+           faclen = 0,
+           box.palette = "RdGn")
 
