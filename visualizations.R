@@ -1,4 +1,3 @@
-
 # Set Working Directory ---------------------------------------------------
 setwd("C:/data/Final_Project")
 
@@ -147,7 +146,8 @@ ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals)) +
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0),
         strip.text.x = element_text(size = 8)) +
-  scale_fill_brewer(palette = "Set2")
+  scale_fill_brewer(palette = "Set2") +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
 
 # Proportion stacked
 
@@ -159,7 +159,8 @@ ggplot(data = df1.Act_Yr,
        x = "Year", y = "") +
   theme_solarized() +
   scale_fill_brewer(palette = "Set2") +
-  theme(plot.title = element_text(hjust = 0), legend.title = element_blank())
+  theme(plot.title = element_text(hjust = 0), legend.title = element_blank()) +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
 
 # Activities Change over time; % change facets
 # df1.Act_Yr (percentageActivitiesByYear.csv)
@@ -181,7 +182,8 @@ ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals, )) +
                aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),
                parse = TRUE) +
   theme_solarized() +
-  theme(legend.position = "none", plot.title = element_text(hjust = 0))
+  theme(legend.position = "none", plot.title = element_text(hjust = 0)) +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
 
 # Alone Percentages by Activity
 # df2.Act_Ratio (activitiesWithRatios.csv)
@@ -198,7 +200,8 @@ ggplot(data = df2.Act_Ratio, aes(x = reorder(ACTIVITY_NAME, aloneRatio1*1))) +
   labs(title = "Percentage of LEOKA Incidents Where Officer Was Alone",
        x = "", y = "Percentage") +
   theme_solarized() +
-  theme(legend.title = element_blank())
+  theme(legend.title = element_blank()) +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
 
 
 v5 <-
@@ -214,7 +217,8 @@ ggplot() +
   scale_x_discrete(labels = NULL, breaks = NULL) + labs(x = "") +
   scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "") +
   theme_solarized() +
-  coord_fixed()
+  coord_fixed() +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
 
 # Region Comparison; Line Chart
 # MergedRegions = df5.Aslt_Reg_Yr + df7.US_Pop
@@ -229,11 +233,11 @@ v6 <-
               se = FALSE, size = 1) +
   labs(title = "LEOKA by Region over Time", subtitle = "Per 100,000 People",
        x = "Year", y = "Count", colour="Region") +
-  theme_solarized()
+  theme_solarized() +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
 
 # Save & Compile ----------------------------------------------------------
 plots.list = list(v1,v2,v3,v4,v5,v6)
 pdf("Visualizations.pdf", paper = "a4r", width = 11.349, height = 8.051)
 print(plots.list)
 dev.off()
-
