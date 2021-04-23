@@ -1,0 +1,592 @@
+---
+title: 'Mitigating Dangers for Law Enforcement Officers:'
+subtitle: 'A review of 25 years of Law Enforcement Officers Killed and Assaulted (LEOKA)'
+author: 'Team 2: Mary Falling, Connor Fletcher, Morgan Miller, Sean Patterson, & Zachary Smith'
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    toc_float:
+      collapsed: false
+---
+
+# About
+This project uses the Law Enforcement Officers Killed and Assaulted (LEOKA) dataset from the FBI Crime Data Explorer (CDE), located at https://crime-data-explorer.fr.cloud.gov/downloads-and-docs. It historically explores the last 25 years of LEOKA statistics across the United States and identifies where risk could be mitigated by dispatching officers in pairs. This identification occurs through examining the following:
+
+* The most dangerous type of calls for LEOs
+* Locations with the highest rate of LEO Killed or Assaulted (LEOKA) incidents
+
+The raw dataset contains 3,744,400 rows and 23 variables. Each row represents an agency’s yearly LEOKA reporting. Some agencies report zero LEOKA incidents in a given year. The dataset covers a 25 year span between 1995 and 2019. Each record contains data about an agency (name, unit, type), its location (state, region, and division), population, LEOKA-caused activities, LEOKA statistics (broken down by type of LEO and weapon), and conviction statistics (count of perpatrators cleared).
+
+
+```{r setup, message = FALSE, warning = FALSE}
+# Libraries ---------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(factoextra)
+```
+
+# Load and Clean Data
+After removing NA values, corrupted data, and unnecessary records, the dataset contains 2,238,299 rows. For our purposes, "unnecessary records" correspond to US Territories and non-city locations. Two additional variables were created for data validation purposes: `officersAssaulted` and `assaultsConducted`. These column summations should equal each other, as they represent the number of officers assaulted and how those assaults were conducted.
+```{r}
+# Read data
+df <- read.csv("data/LEOKA_1995_2019.csv", na.strings = "")
+str(df)
+
+# Drop non-year values from DATA_YEAR
+years <- unique(df$DATA_YEAR)[1:25]
+indices <- grepl(paste(years, collapse = "|"), df$DATA_YEAR)
+df <- df[indices, ]
+
+# Drop NA values from COUNTY_NAME
+indices <- is.na(df$COUNTY_NAME)
+df <- df[-indices, ]
+
+# Drop inaccurate values from ACTIVITY_NAME
+activityType <- unique(df$ACTIVITY_NAME)[1:11]
+indices <- grepl(paste(activityType, collapse = "|"), df$ACTIVITY_NAME)
+df <- df[indices, ]
+
+# Convert quantitative variables to numeric.
+df[, 12:23] <- sapply(df[, 12:23], as.numeric)
+
+# Filter to Cities and drop Territories.
+df <- df %>%
+  filter(grepl("Cities", POPULATION_GROUP_DESC)) %>%
+  filter(REGION_NAME != "U.S. Territories")
+
+# Perform data validation on assault counts.
+# Add rowSums for officersAssaulted and assaultsConducted.
+# Then, filter the dataset to only keep records where these numbers match.
+officerType <- colnames(df)[12:18]
+assaultType <- colnames(df)[19:22]
+
+df <- df %>%
+  mutate(officersAssaulted = rowSums(df[, officerType])) %>%
+  mutate(assaultsConducted = rowSums(df[, assaultType])) %>%
+  filter(officersAssaulted == assaultsConducted)
+
+write.csv(df, "output/cleandf.csv")
+```
+
+# Create Subsets and conduct Exploratory Data Analysis
+A series of subsets were created to interrogate the data. These subset requirements were generated during the team's April 8th and April 11th Meetings.
+
+**SUBSETS:**
+
+1. 25 records (by year) with metadata + officer & assaults
+2. 5 records (by region) with metadata + officer & assaults
+3. 100 records (by region and year) with year, region, and assaults
+4. 11 records (by activities) with ratios of one vs two officers
+5. 275 (by year and region) Assault Ratios by Type
+6. 225 (by year and state) Percentage of activities by year
+7. Selected categories for a Decision Tree
+8. Experimental filtered dataset for possible linear regressions
+
+```{r}
+# Subset 1: Total Assaults By Year ----------------------------------------
+
+# Get the column names for officer and assault types
+meta <- colnames(df)[1:9]
+activities <- colnames(df)[10:11]
+
+# DATASET 1: Number of officers assaulted, whole set. 
+totalAssaults <- df[, c(meta, activities, "officersAssaulted")]
+
+# DATASET 2: Number of officers assaulted by year.
+Aslt_Yr <- totalAssaults %>%
+  group_by(DATA_YEAR) %>%
+  tally(officersAssaulted, name = "officersAssaulted") %>%
+  as.data.frame()
+head(Aslt_Yr)
+summary(Aslt_Yr)
+
+write.csv(Aslt_Yr, "output/totalAssaultsByYear.csv")
+
+
+
+
+# Subset 2: Total Assaults By Region --------------------------------------
+
+# DATASET 3: Number of officers assaulted, by region.
+Aslt_Reg <- totalAssaults %>%
+  group_by(REGION_NAME) %>%
+  tally(officersAssaulted, name = "officersAssaulted") %>%
+  as.data.frame()
+head(Aslt_Reg)
+summary(Aslt_Reg)
+write.csv(Aslt_Reg, "output/totalAssaultsByRegion.csv")
+
+
+
+
+# Subset 3: Total Assaults By Region and Year -----------------------------
+
+# DATASET 3.5: Bonus -- By year and region.
+Aslt_Reg_Yr <- totalAssaults %>%
+  group_by(DATA_YEAR, REGION_NAME) %>%
+  tally(officersAssaulted, name = "officersAssaulted") %>%
+  as.data.frame()
+head(Aslt_Reg_Yr)
+summary(Aslt_Reg_Yr)
+write.csv(Aslt_Reg_Yr, "output/totalAssaultsByRegionAndYear.csv")
+
+
+
+
+# Subset 4: Assault Ratios By Activity Type -------------------------------
+
+# Get the names of all three columns that represent alone LEO
+aloneCols <- officerType[c(2,4, 6)]
+
+# Get the LEOKA sum for two officers and alone officers (by activity)
+Act_Sums <- df %>%
+  group_by(ACTIVITY_NAME) %>%
+  summarise_at(c("TWO_OFFICER_VEHICLE_ACTUAL", 
+                 aloneCols), sum) %>%
+  as.data.frame()
+head(Act_Sums)
+Act_Sums
+
+# For convenience, get the rowSums prior to making the ratios below.
+aloneSums <- rowSums(Act_Sums[aloneCols])
+
+# Create two sets of ratios (explained below)
+Act_Ratio <- Act_Sums %>%
+  mutate(partnerRatio1 = (TWO_OFFICER_VEHICLE_ACTUAL)/
+           (TWO_OFFICER_VEHICLE_ACTUAL + ONE_OFFICER_ALONE_ACTUAL)) %>%
+  mutate(aloneRatio1 = (ONE_OFFICER_ALONE_ACTUAL)/
+           (TWO_OFFICER_VEHICLE_ACTUAL + ONE_OFFICER_ALONE_ACTUAL)) %>%
+  mutate(partnerRatio2 = (TWO_OFFICER_VEHICLE_ACTUAL)/
+           (TWO_OFFICER_VEHICLE_ACTUAL + aloneSums)) %>%
+  mutate(aloneRatio2 = (aloneSums)/
+           (TWO_OFFICER_VEHICLE_ACTUAL + aloneSums))
+head(Act_Ratio)
+write.csv(Act_Ratio,"output/activitiesWithRatios.csv")
+
+
+# Subset 5: Percentage of Activities By Year ------------------------------
+
+# Get the breakdown of activities per year.
+totalAssaultsByYrAct <- df %>%
+  group_by(DATA_YEAR, ACTIVITY_NAME) %>%
+  tally(officersAssaulted)
+
+# Join the activities per year to the "by Year" dataset
+# This provides the denominator for the ratios.
+Act_Yr <- inner_join(totalAssaultsByYrAct, 
+                     Aslt_Yr,
+                     by = "DATA_YEAR")
+
+Act_Yr <- Act_Yr %>%
+  mutate(ratio = n/officersAssaulted)
+
+# Rename columns for ease of understanding
+colnames(Act_Yr)[3:4] <- c("activityTotals", "yearlyTotals")
+
+
+head(Act_Yr)
+
+write.csv(Act_Yr, "output/percentageActivitiesByYear.csv")
+
+
+
+
+# Subset 6: Assaults by State and Year ------------------------------------
+
+Aslt_St_Yr <- df
+Aslt_St_Yr$DATA_YEAR <- gsub(paste(years[1:5], collapse = "|"), "'95-'99", df$DATA_YEAR)
+Aslt_St_Yr$DATA_YEAR <- gsub(paste(years[6:10], collapse = "|"), "'00-'04", Aslt_St_Yr$DATA_YEAR)
+Aslt_St_Yr$DATA_YEAR <- gsub(paste(years[11:15], collapse = "|"), "'05-'09", Aslt_St_Yr$DATA_YEAR)
+Aslt_St_Yr$DATA_YEAR <- gsub(paste(years[16:20], collapse = "|"), "'10-'14", Aslt_St_Yr$DATA_YEAR)
+Aslt_St_Yr$DATA_YEAR <- gsub(paste(years[21:25], collapse = "|"), "'15-'19", Aslt_St_Yr$DATA_YEAR)
+
+Aslt_St_Yr <- Aslt_St_Yr %>%
+  group_by(DATA_YEAR, STATE_ABBR) %>%
+  tally(officersAssaulted, name = "officersAssaulted")
+head(Aslt_St_Yr)
+write.csv(Aslt_St_Yr, "output/AssaultsByStateAndYear.csv")
+
+
+# Subset 7: Decision Trees ------------------------------------------------
+
+# Create categorical column based on whether a record reported a LEOKA
+df$assault <- ifelse(test = df$officersAssaulted > 0, 
+                     yes = "Assault", 
+                     no = "No Assault")
+
+# Select categories useful for decision tree modeling (data from last 5 years)
+Recent_Cats <- df %>%
+  select(DATA_YEAR, REGION_NAME, AGENCY_TYPE_NAME, POPULATION_GROUP_DESC,
+         ACTIVITY_ID, ACTIVITY_NAME, assault) %>%
+  filter(DATA_YEAR %in% years[21:25])
+head(Recent_Cats)
+write.csv(Recent_Cats, "output/Recent_Cats.csv")
+
+
+
+#   -----------------------------------------------------------------------
+
+# For linear regression, matching the Decision Tree specifications
+# Note: This was ultimately not used.
+Act_Yr_Filtered <- df %>%
+  filter(POPULATION_GROUP_DESC %in% unique(df$POPULATION_GROUP_DESC)[c(3, 4, 6, 7, 8, 9)]) %>%
+  filter(DATA_YEAR %in% years[21:25]) %>%
+  group_by(DATA_YEAR, ACTIVITY_NAME) %>%
+  tally(officersAssaulted)
+head(Act_Yr_Filtered)
+
+```
+
+---
+
+# Visualizations
+Using the subsets created above, a series of visualizations were created to explore and understand the data. The following section acts as a stand-alone file (libraries included).
+
+```{r, message = FALSE, warning = FALSE}
+# Libraries ---------------------------------------------------------------
+library(tidyverse)
+library(RColorBrewer)
+library(ggthemes)
+library(maps)
+library(ggpmisc)
+```
+
+## Load Data
+The visualization component of this project relies on the shared github repository. The datasets (generated above) are sourced from: https://github.com/mfalling/LEOKA-Final-Project/tree/main/output
+
+```{r}
+df1.Act_Yr <- read.csv("output/percentageActivitiesByYear.csv", na.strings = "")
+df2.Act_Ratio <- read.csv("output/activitiesWithRatios.csv", na.strings = "")
+df3.Aslt_St_Yr <- read.csv("output/AssaultsByStateAndYear.csv", na.strings = "")
+df4.Aslt_Reg <- read.csv("output/totalAssaultsByRegion.csv", na.strings = "")
+df5.Aslt_Reg_Yr <- read.csv("output/totalAssaultsByRegionAndYear.csv", na.strings = "")
+df6.Aslt_Yr <- read.csv("output/totalAssaultsByYear.csv", na.strings = "")
+df7.US_Pop <- read.csv("data/nst-est2019-01.csv", na.strings = "", 
+                       header=TRUE, stringsAsFactors=FALSE)
+```
+
+## Prepare Data
+Producing the visualations required another layer of data cleaning. These steps include renaming and combining values within the newly converted-to-factor `ACTIVITY_NAME` variable. We also removed unused columns, created new summations and averages where needed, fixed incorrect state abbreviations, and adjusted variable names as appropriate.
+
+```{r}
+### df1.Act_Yr ###
+# Combine Burglaries and Robberies into one group
+df1.Act_Yr$ACTIVITY_NAME <- gsub("Burglaries i", "I", df1.Act_Yr$ACTIVITY_NAME)
+df1.Act_Yr$ACTIVITY_NAME <- gsub("Robberies i", "I", df1.Act_Yr$ACTIVITY_NAME)
+df1.Act_Yr$ACTIVITY_NAME <- gsub("Burglary ", "", df1.Act_Yr$ACTIVITY_NAME)
+df1.Act_Yr$ACTIVITY_NAME <- gsub("Robbery ", "", df1.Act_Yr$ACTIVITY_NAME)
+
+# Combine Ambush and Civil Disorder into "all other"
+df1.Act_Yr$ACTIVITY_NAME <- gsub(
+  "Ambush - No Warning", "All Other", df1.Act_Yr$ACTIVITY_NAME)
+df1.Act_Yr$ACTIVITY_NAME <- gsub(
+  "Civil Disorder", "All Other", df1.Act_Yr$ACTIVITY_NAME)
+
+# Segment for bar graphs
+# factor levels
+df1.flevels <- c('Responding to Disturbance Calls', 
+             'Attempting Other Arrests',
+             'Handling, Transporting, Custody of Prisoners', 
+             'Investigating Suspicious Persons or Circumstances', 
+             'Traffic Pursuits and Stops',
+             'Handling Persons with Mental Illness',
+             'In Progress or Pursuing Suspects',
+             'All Other')
+
+df1.Act_Yr$ACTIVITY_NAME <- as.factor(df1.Act_Yr$ACTIVITY_NAME)
+df1.Act_Yr$ACTIVITY_NAME <- ordered(df1.Act_Yr$ACTIVITY_NAME, 
+                                    levels = df1.flevels)
+
+df1.Act_Yr <- df1.Act_Yr[,c(-1,-5)] #Remove unused col
+
+df1.Act_Yr <- df1.Act_Yr %>%  #Group and summarize
+  group_by(ACTIVITY_NAME, DATA_YEAR) %>%
+  summarise_if(is.numeric, sum)
+
+
+
+df1.Act_Yr_bg <- df1.Act_Yr[,c(-1,-4)] # Background Data - full
+df1.Act_Yr_ss <- subset(df1.Act_Yr, DATA_YEAR == "2019") #subset for value label
+
+### df2.Act_Ratio ###
+# factor levels (includes 2 categories lumped into "all other" from df1 and 
+#                two combined)
+df2.flevels <- c('Responding to Disturbance Calls', 
+              'Attempting Other Arrests',
+              'Handling, Transporting, Custody of Prisoners', 
+              'Investigating Suspicious Persons or Circumstances', 
+              'Traffic Pursuits and Stops',
+              'Handling Persons with Mental Illness',
+              'Burglaries in Progress or Pursuing Burglary Suspects', #added
+              'Robberies in Progress or Pursuing Robbery Suspects', #added
+              'Ambush - No Warning', #added
+              'Civil Disorder', #added
+              'All Other')
+
+df2.Act_Ratio$ACTIVITY_NAME <- as.factor(df2.Act_Ratio$ACTIVITY_NAME)
+df2.Act_Ratio$ACTIVITY_NAME <- ordered(df2.Act_Ratio$ACTIVITY_NAME, 
+                                       levels = df2.flevels)
+
+df2.Act_Ratio_ss <-       #subset for highlighing
+  subset(df2.Act_Ratio, 
+         ACTIVITY_NAME == "Handling, Transporting, Custody of Prisoners" |
+         ACTIVITY_NAME == "Traffic Pursuits and Stops")
+
+### df3.Aslt_St_Yr ###
+
+df3.Aslt_St_Yr <- df3.Aslt_St_Yr[,c(-1)]  #Remove unused col
+df3.Aslt_St_Yr$STATE_ABBR <- gsub("NB", "NE", df3.Aslt_St_Yr$STATE_ABBR)
+  #Nebraska's changed abbreviation from NB to NE in 1969
+
+df3.Aslt_St_Yr$region <-              #Convert abbreviations to names/lower case
+  tolower(state.name[match(df3.Aslt_St_Yr$STATE_ABBR,state.abb)])
+
+df3.Aslt_St_2015_to_2019 <- df3.Aslt_St_Yr %>%    #Group, filter, and summarize
+  filter(DATA_YEAR == "'15-'19") %>% #Select only 15-19
+  group_by(STATE_ABBR, region) %>%
+  summarise_if(is.numeric, sum)
+
+df3.Aslt_St_2015_to_2019$officersAssaultedAverage <- #create 5 year average
+  df3.Aslt_St_2015_to_2019$officersAssaulted / 5
+
+### df5.Aslt_Reg_Yr ###
+names(df5.Aslt_Reg_Yr)[names(df5.Aslt_Reg_Yr) == "REGION_NAME"] <- "region"
+df5.Aslt_Reg_Yr$region <- tolower(df5.Aslt_Reg_Yr$region)
+
+### df7.US_Pop ###
+df7.US_Pop$region <- tolower(df7.US_Pop$region) #lowecase
+df7.US_Pop$Five_Year_Avg_Pop <- rowMeans(df7.US_Pop[,c(9:13)], na.rm=TRUE)
+df7.US_Pop <- df7.US_Pop[,c(-2:-13)] #Remove unused col
+
+### Join & cleaned Datasets ###
+
+MainStates <- map_data("state")
+MergedStates <- inner_join(df3.Aslt_St_2015_to_2019, MainStates, by = "region")
+MergedStates <- inner_join(MergedStates, df7.US_Pop, by = "region")
+MergedRegions <-inner_join(df5.Aslt_Reg_Yr, df7.US_Pop, by = "region")
+```
+
+## Visualization Creation
+
+```{r}
+### Comparison ###
+
+# Total vs Activity Type; Col chart
+# df1.Act_Yr (percentageActivitiesByYear.csv)
+
+v1 <-
+ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals)) +
+  geom_bar(data = df1.Act_Yr_bg, stat = "identity",
+           fill = "grey", alpha = .5, aes(y = activityTotals)) +
+  geom_bar(stat = "identity", color = "white", size = 0.1,
+           aes(y = activityTotals, fill = ACTIVITY_NAME)) +
+  facet_wrap(~ factor(ACTIVITY_NAME, levels = df1.flevels),
+        ncol = 3, scales = "free") +
+  geom_text(data = df1.Act_Yr_ss, vjust=-2, hjust=1,
+            aes(label = sprintf("2019: %1.2f%%", 100*ratio))) +
+  labs(title = "LEOKA Incidents Per Year by Activity",
+       x = "Year", y = "Count") +
+  theme_solarized() +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0),
+        strip.text.x = element_text(size = 8)) +
+  scale_fill_brewer(palette = "Set2") +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+v1
+
+# Proportion stacked
+
+v2 <- 
+ggplot(data = df1.Act_Yr, 
+       aes(x = DATA_YEAR, y = activityTotals, fill = ACTIVITY_NAME)) +
+  geom_bar(position="fill", stat="identity", width=1, color = "white") +
+  labs(title = "Proportion of LEOKA Incidents Per Year by Activity",
+       x = "Year", y = "") +
+  theme_solarized() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(plot.title = element_text(hjust = 0), legend.title = element_blank()) +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+v2
+
+# Activities Change over time; % change facets
+# df1.Act_Yr (percentageActivitiesByYear.csv)
+
+my.formula <- y ~ x
+v3 <-
+ggplot(data = df1.Act_Yr, aes(x = DATA_YEAR, y = activityTotals, )) +
+  geom_bar(stat = "identity", color = "white", size = 0.1, alpha = 0.5,
+           aes(y = activityTotals)) +
+  geom_smooth(method = lm, size = 1.5, show.legend = FALSE, 
+              aes(color = "orange3")) +
+  facet_wrap(~ factor(ACTIVITY_NAME, levels = df1.flevels),
+             ncol = 3, scales = "free") +
+  labs(title = "Change in Number of LEOKA Incidents",
+       subtitle = "Per Year by Activity",
+       x = "Year", y = "Count") +
+  stat_poly_eq(formula = my.formula, color = "blue", size = 2.5,
+               label.x = "right", label.y = 1,
+               aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")),
+               parse = TRUE) +
+  theme_solarized() +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0)) +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+v3
+
+# Alone Percentages by Activity
+# df2.Act_Ratio (activitiesWithRatios.csv)
+
+v4 <-
+ggplot(data = df2.Act_Ratio, aes(x = reorder(ACTIVITY_NAME, aloneRatio1*1))) +
+  geom_bar(stat = "identity", fill = "lightblue", aes(y = aloneRatio1*1)) +
+  geom_bar(data = df2.Act_Ratio_ss, stat = "identity",
+           fill = "red4", aes(y = aloneRatio1*1)) +
+  coord_flip() +
+  scale_y_continuous(breaks = seq(0, 0.7, 0.1), 
+                     labels = paste0(as.character(
+                       c("0","10","20","30","40","50","60","70")), "%")) +
+  labs(title = "Percentage of LEOKA Incidents Where Officer Was Alone",
+       x = "", y = "Percentage") +
+  theme_solarized() +
+  theme(legend.title = element_blank()) +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+v4
+
+v5 <-
+ggplot() + 
+  geom_polygon(data=MergedStates, aes(x=long, y=lat, group=group,
+                    fill = officersAssaulted/Five_Year_Avg_Pop * 100000), 
+                color="white", size = 0.2)  +
+  labs(title = "Average LEOKA Per Year: 2015 - 2019", 
+       subtitle = "Per 100,000 People") +
+  scale_fill_continuous(name="", 
+                        low = "lightblue", high = "darkred",
+                        na.value = "grey50") +
+  scale_x_discrete(labels = NULL, breaks = NULL) + labs(x = "") +
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "") +
+  theme_solarized() +
+  coord_fixed() +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+v5
+
+# Region Comparison; Line Chart
+# MergedRegions = df5.Aslt_Reg_Yr + df7.US_Pop
+
+v6 <- 
+  ggplot(MergedRegions,
+         aes(x = as.numeric(DATA_YEAR), 
+             y = officersAssaulted/Five_Year_Avg_Pop * 100000,
+             col = region)) +
+  geom_line(linetype = "dashed") +
+  geom_smooth(formula = "y ~ x", method = "loess",
+              se = FALSE, size = 1) +
+  labs(title = "LEOKA by Region over Time", subtitle = "Per 100,000 People",
+       x = "Year", y = "Count", colour="Region") +
+  theme_solarized() +
+  theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+v6
+```
+
+```{r, message = FALSE, warning = FALSE}
+# Save & Compile ----------------------------------------------------------
+plots.list = list(v1,v2,v3,v4,v5,v6)
+pdf("Visualizations.pdf", paper = "a4r", width = 11.349, height = 8.051)
+print(plots.list)
+dev.off()
+```
+
+---
+
+# Decision Tree
+This next analytic technique also functions as an independent script and relies on the output files stored on the shared Github repository. The decision tree answers the questions, "Should a LEOKA incident expected for a call?"
+
+```{r, message = FALSE, warning = FALSE}
+# Library -----------------------------------------------------------------
+
+library(dplyr)
+library(rpart)
+library(rpart.plot)
+```
+
+## Read and Clean Data
+Another stage of data cleaning was necessary prior to generating the decision tree. This removed unnecesary columns and simplified the values within the `Populations` variable.
+```{r}
+# For Decision Trees
+Recent_Cats <- read.csv("output/Recent_Cats.csv")
+colnames(Recent_Cats)
+
+Recent_Cats <- Recent_Cats[, -(1:2)]
+legend <- unique(Recent_Cats[, 4:5])
+Recent_Cats <- Recent_Cats[, -5]
+
+
+Recent_Cats$ACTIVITY_ID <- as.factor(Recent_Cats$ACTIVITY_ID)
+
+colnames(Recent_Cats)[3] <- "Population"
+Recent_Cats$Population <- gsub("Cities ", "", Recent_Cats$Population)
+Recent_Cats$Population <- gsub("from ", "", Recent_Cats$Population)
+Recent_Cats$Population <- gsub("thru", "-", Recent_Cats$Population)
+head(Recent_Cats)
+```
+
+
+## Analysis
+A decision tree was built to predict assault probabilities based on four attributes: Region, Agency Type
+(e.g., state law enforcement, university police, etc), city population, and activity. Only two attributes
+contributed to the decision tree: Population (over or under 25k people) and activity. After running the model and determining the population split at 25k people, the values were renamed for ease of visualization. This adjustment did not affect the model outcome.
+```{r}
+# As per pg 207, set the minimum observations to 10% of the dataset size.
+observations <- nrow(Recent_Cats)*0.1
+nrow(Recent_Cats)*0.10
+colnames(Recent_Cats)
+
+# Run, view, and plot model.
+fit <- rpart(assault ~ ., 
+             data = Recent_Cats, 
+             method = "class", 
+             control = rpart.control(minsplit = observations),
+             parms = list(split = "information"))
+summary(fit)
+rpart.plot(fit, 
+           type = 4, 
+           extra = 102, 
+           clip.right.labs = FALSE, 
+           varlen = 0, faclen = 0)
+
+
+
+# Because the decision tree splits at "Under 25k" and "Over 25k", I'm changing the factors to reflect this.
+Recent_Cats$Population <- factor(Recent_Cats$Population)
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "under 2,500"] <- "Under 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "2,500 - 9,999"] <- "Under 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "10,000 - 24,999"] <- "Under 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "25,000 - 49,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "50,000 - 99,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "100,000 - 249,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "250,000 - 499,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "500,000 - 999,999"] <- "Over 25k"
+levels(Recent_Cats$Population)[levels(Recent_Cats$Population) == "1,000,000 or over"] <- "Over 25k"
+
+
+
+# Rerun the model (results are the same, but labels are cleaner)
+fit <- rpart(assault ~ ., 
+             data = Recent_Cats, 
+             method = "class", 
+             control = rpart.control(minsplit = observations),
+             parms = list(split = "information"))
+rpart.plot(fit, 
+           type = 4, 
+           extra = 2, 
+           clip.right.labs = FALSE, 
+           varlen = 0, 
+           faclen = 0,
+           box.palette = "RdGn")
+```
+
+## Most Dangerous Activities
+The following table describes the most dangerous activities (in cities with population over 25k people), according to the decision tree above.
+```{r}
+legend[c(1, 2, 5, 7, 8, 11), ]
+```
